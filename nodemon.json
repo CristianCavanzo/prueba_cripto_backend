@@ -1,0 +1,12 @@
+{
+    "watch": ["src"],
+    "ext": "ts,json",
+    "ignore": ["src/**/*.spec.ts", "node_modules/", "dist/"],
+    "execMap": {
+      "ts": "node -r ts-node/register --env-file=.env"
+    },
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "exec": "node -r ts-node/register --env-file=.env ./src/app.ts"
+  }
