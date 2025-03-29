@@ -3,6 +3,31 @@ import { prisma } from '@config';
 export class TransactionsRepository {
     private transactions = prisma.transactions;
 
+    dataToReturn = {
+        include: {
+            user: {
+                select: {
+                    name: true,
+                },
+            },
+            type: {
+                select: {
+                    name: true,
+                },
+            },
+            status: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+        omit: {
+            id_status: true,
+            id_type: true,
+            id_user: true,
+        },
+    };
+
     async create({
         amount,
         idStatus,
@@ -21,28 +46,7 @@ export class TransactionsRepository {
                 id_type: idType,
                 id_status: idStatus,
             },
-            include: {
-                user: {
-                    select: {
-                        name: true,
-                    },
-                },
-                type: {
-                    select: {
-                        name: true,
-                    },
-                },
-                status: {
-                    select: {
-                        name: true,
-                    },
-                },
-            },
-            omit: {
-                id_status: true,
-                id_type: true,
-                id_user: true,
-            },
+            ...this.dataToReturn,
         });
     }
 
@@ -89,7 +93,7 @@ export class TransactionsRepository {
                     id: idTransaction,
                 },
                 data: {
-                    id_status: 2,
+                    id_status: 1,
                 },
             });
             await prisma.balances.update({
@@ -113,4 +117,36 @@ export class TransactionsRepository {
             },
         });
     }
+    discountBalance = async (
+        amount: number,
+        userId: number,
+        transaction: {
+            amount: number;
+            idType: number;
+            idUser: number;
+            idStatus: number;
+        }
+    ) => {
+        return prisma.$transaction(async (prisma) => {
+            await prisma.balances.update({
+                where: {
+                    id_user: userId,
+                },
+                data: {
+                    amount: {
+                        decrement: amount,
+                    },
+                },
+            });
+            return await prisma.transactions.create({
+                data: {
+                    id_user: transaction.idUser,
+                    amount: transaction.amount,
+                    id_type: transaction.idType,
+                    id_status: transaction.idStatus,
+                },
+                ...this.dataToReturn,
+            });
+        });
+    };
 }
