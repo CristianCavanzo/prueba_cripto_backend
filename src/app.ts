@@ -1,12 +1,13 @@
-import { envs } from '@config/env';
-import express, { Request, Response } from 'express';
-import { PrismaClient } from "@prisma/client";
+import { envs } from '@config';
+import express from 'express';
 
-export const prisma = new PrismaClient(); 
+import userRoutes from '@/modules/users/user.routes';
 
 const app = express();
 app.use(express.json());
 
-const PORT = 3001;
+app.use('/users', userRoutes);
+
+const PORT = envs.port || 3001;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
