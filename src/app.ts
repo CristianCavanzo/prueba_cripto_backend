@@ -1,8 +1,10 @@
 import express, { Request, Response } from 'express';
+import { envs } from './config/env';
+
 const app = express();
 app.use(express.json());
 
-console.log(process.env.DATABASE_URL);
+console.log(envs, process.env.DATABASE_URL);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!');
