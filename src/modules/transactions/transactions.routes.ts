@@ -7,5 +7,9 @@ const router = Router();
 
 router.post('/create', transactionController.create);
 router.get('/:user_id', transactionController.getAllByIdUser);
+router.patch(
+    '/updateStatus/:transaction_id',
+    transactionController.updateStatus
+);
 
 export default router;

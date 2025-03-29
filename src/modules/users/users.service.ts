@@ -1,6 +1,7 @@
 import { validateOrReject } from 'class-validator';
 import { CreateUser } from './dto';
 import { UserRepository } from './users.repository';
+import { Users } from '@prisma/client';
 
 export class UserService {
     private userRepository = new UserRepository();
@@ -20,7 +21,9 @@ export class UserService {
             };
         }
 
-        return await this.userRepository.createUser(name, email);
+        await this.userRepository.createUserAndBalance(name, email);
+
+        return (await this.userRepository.findUserByEmail(email)) as Users;
     }
 
     getAllUsers = async () => {

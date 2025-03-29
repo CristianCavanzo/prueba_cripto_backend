@@ -70,4 +70,47 @@ export class TransactionsRepository {
             },
         });
     }
+
+    async updateStatus(idTransaction: number, idStatus: number) {
+        return await this.transactions.update({
+            where: {
+                id: idTransaction,
+            },
+            data: {
+                id_status: idStatus,
+            },
+        });
+    }
+
+    updateStatusAndBalance = async (idTransaction: number) => {
+        return await prisma.$transaction(async (prisma) => {
+            const transaction = await prisma.transactions.update({
+                where: {
+                    id: idTransaction,
+                },
+                data: {
+                    id_status: 2,
+                },
+            });
+            await prisma.balances.update({
+                where: {
+                    id_user: transaction.id_user,
+                },
+                data: {
+                    amount: {
+                        increment: transaction.amount,
+                    },
+                },
+            });
+            return transaction;
+        });
+    };
+
+    async getById(idTransaction: number) {
+        return await this.transactions.findUnique({
+            where: {
+                id: idTransaction,
+            },
+        });
+    }
 }
