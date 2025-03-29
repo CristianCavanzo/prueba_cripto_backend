@@ -12,3 +12,66 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  createdAt    DateTime       @default(now()) @map("created_at")
+  transactions Transactions[]
+  balance      Balances?
+
+  @@index([email], name: "idx_users_email")
+  @@map("users")
+}
+
+model TransactionTypes {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  createdAt    DateTime       @default(now()) @map("created_at")
+  transactions Transactions[]
+
+  @@index([name], name: "idx_transaction_types_name")
+  @@map("transaction_types")
+}
+
+model Statuses {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  createdAt    DateTime       @default(now()) @map("created_at")
+  transactions Transactions[]
+
+  @@index([name], name: "idx_statuses_name")
+  @@map("statuses")
+}
+
+model Transactions {
+  id          Int      @id @default(autoincrement())
+  id_user     Int
+  id_type     Int
+  id_status   Int
+  amount      Decimal  @db.Decimal(10, 2)
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user   Users            @relation(fields: [id_user], references: [id])
+  type   TransactionTypes @relation(fields: [id_type], references: [id])
+  status Statuses         @relation(fields: [id_status], references: [id])
+
+  @@index([id_user], name: "idx_transactions_id_user")
+  @@index([id_type], name: "idx_transactions_id_type")
+  @@index([id_status], name: "idx_transactions_id_status")
+  @@map("transactions")
+}
+
+model Balances {
+  id        Int      @id @default(autoincrement())
+  id_user   Int      @unique
+  amount    Decimal  @db.Decimal(10, 2)
+  create_at DateTime @default(now())
+
+  user Users @relation(fields: [id_user], references: [id])
+
+  @@map("balances")
+}
