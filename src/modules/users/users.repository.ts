@@ -1,18 +1,19 @@
 import { prisma } from '@config';
 
 export class UserRepository {
+    users = prisma.users;
     async createUser(name: string, email: string) {
-        return await prisma.users.create({
+        return await this.users.create({
             data: { name, email },
         });
     }
 
     async findAllUsers() {
-        return await prisma.users.findMany();
+        return await this.users.findMany();
     }
 
     async findUserByEmail(email: string) {
-        return await prisma.users.findUnique({
+        return await this.users.findUnique({
             where: { email },
         });
     }
