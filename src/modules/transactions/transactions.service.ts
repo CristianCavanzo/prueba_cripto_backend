@@ -4,7 +4,7 @@ import { TransactionsTypesService } from '@modules/transactionTypes/transactionT
 import { Transactions } from '@prisma/client';
 import { validateOrReject } from 'class-validator';
 import { CreateTransactions, GetById, UpdateStatusTransactions } from './dto';
-import { TransactionCreate } from './models';
+import { TransactionCreate, TransactionsWithoutIds } from './models';
 import { TransactionsRepository } from './transactions.repository';
 
 export class TransactionsService {
@@ -105,13 +105,21 @@ export class TransactionsService {
             };
         }
 
-        let transaction: Transactions;
+        let transaction: TransactionsWithoutIds | undefined = undefined;
 
         if (status === 'Success') {
-            transaction =
+            const transactionT =
                 await this.transactionsRepository.updateStatusAndBalance(
                     idTransaction
                 );
+            if (!transactionT) {
+                throw {
+                    customError: true,
+                    message: 'Transaction not found',
+                    property: 'idTransaction',
+                };
+            }
+            transaction = transactionT;
         } else {
             transaction = await this.transactionsRepository.updateStatus(
                 idTransaction,
@@ -120,5 +128,10 @@ export class TransactionsService {
         }
 
         return transaction;
+    };
+
+    getAll = async () => {
+        const transactions = await this.transactionsRepository.getAll();
+        return transactions;
     };
 }

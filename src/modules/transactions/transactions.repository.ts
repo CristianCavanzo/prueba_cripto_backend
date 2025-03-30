@@ -83,6 +83,7 @@ export class TransactionsRepository {
             data: {
                 id_status: idStatus,
             },
+            ...this.dataToReturn,
         });
     }
 
@@ -106,7 +107,13 @@ export class TransactionsRepository {
                     },
                 },
             });
-            return transaction;
+            const newTransaction = await prisma.transactions.findUnique({
+                where: {
+                    id: transaction.id,
+                },
+                ...this.dataToReturn,
+            });
+            return newTransaction;
         });
     };
 
@@ -147,6 +154,33 @@ export class TransactionsRepository {
                 },
                 ...this.dataToReturn,
             });
+        });
+    };
+
+    getAll = async () => {
+        return await this.transactions.findMany({
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                    },
+                },
+                type: {
+                    select: {
+                        name: true,
+                    },
+                },
+                status: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+            omit: {
+                id_status: true,
+                id_type: true,
+                id_user: true,
+            },
         });
     };
 }

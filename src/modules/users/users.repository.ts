@@ -18,7 +18,11 @@ export class UserRepository {
     }
 
     async findAllUsers() {
-        return await this.users.findMany();
+        return await this.users.findMany({
+            include: {
+                balance: true,
+            },
+        });
     }
 
     async findUserByEmail(email: string) {

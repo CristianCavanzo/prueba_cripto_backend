@@ -11,5 +11,6 @@ router.patch(
     '/updateStatus/:transaction_id',
     transactionController.updateStatus
 );
+router.get('/', transactionController.getAll);
 
 export default router;

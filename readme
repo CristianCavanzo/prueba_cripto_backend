@@ -1,2 +1,0 @@
-CREATE DB docker
-docker run  -e POSTGRES_PASSWORD=secret_db_password -p 5432:5432 -d postgres 

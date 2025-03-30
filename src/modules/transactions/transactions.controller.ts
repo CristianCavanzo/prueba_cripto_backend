@@ -52,7 +52,7 @@ export class TransactionsController {
         res.status(response.status).json(response);
     };
     updateStatus = async (req: Request, res: Response) => {
-        const response: ApiResponse<Transactions> = {
+        const response: ApiResponse<TransactionsWithoutIds> = {
             data: undefined,
             error: false,
             status: 200,
@@ -65,6 +65,24 @@ export class TransactionsController {
                 status
             );
             response.data = transaction;
+        } catch (error) {
+            const newError = returnParsedError(error);
+            response.error = true;
+            response.data = newError.error;
+            response.status = newError.status;
+        }
+        res.status(response.status).json(response);
+    };
+
+    getAll = async (req: Request, res: Response) => {
+        const response: ApiResponse<TransactionsWithoutIds[]> = {
+            data: undefined,
+            error: false,
+            status: 200,
+        };
+        try {
+            const transactions = await this.transactionsService.getAll();
+            response.data = transactions;
         } catch (error) {
             const newError = returnParsedError(error);
             response.error = true;
