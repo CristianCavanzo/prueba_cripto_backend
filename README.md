@@ -32,7 +32,7 @@ Para correr el backend después de la configuración:
 
 ```sh
 npm install
-npm run seed
+npm run db
 npm run dev
 ```
 

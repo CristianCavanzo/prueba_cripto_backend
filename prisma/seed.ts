@@ -12,6 +12,7 @@ async function main() {
                 name: 'Withdrawal',
             },
         ],
+        skipDuplicates: true,
     });
 
     await prisma.statuses.createMany({
@@ -26,6 +27,7 @@ async function main() {
                 name: 'Pending',
             },
         ],
+        skipDuplicates: true,
     });
 }
 
